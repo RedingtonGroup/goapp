@@ -33,9 +33,8 @@ jobs:
     - name: SonarQube analysis
       run: |
         sonar-scanner \
-          -Dsonar.projectKey=golang \
-          -Dsonar.projectName=golang \
+          -Dsonar.host.url=http://your-sonarqube-instance:9000/ \
+          -Dsonar.login=your-sonarqube-token \
+          -Dsonar.projectKey=your-project-key \
+          -Dsonar.projectName=your-project-name \
           -Dsonar.sources=.
-          -Dsonar.host.url=http://13.200.137.62:9000/ \
-          -Dsonar.login=e7ede98e13cd10ef87960f0c5f0a827ab7c3efba
-
