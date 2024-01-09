@@ -1,4 +1,4 @@
-name: Go SonarQube
+name: CodeQL Analysis
 
 on:
   push:
@@ -6,38 +6,29 @@ on:
       - main
 
 jobs:
-  sonarqube:
+  codeql-analysis:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [go]  # Add other languages as needed
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
 
-    - name: Install SonarQube Scanner
-      run: |
-        curl -o sonar-scanner-cli.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-        unzip sonar-scanner-cli.zip
-        sudo mv sonar-scanner-4.6.2.2472-linux /opt/sonar-scanner
-        rm sonar-scanner-cli.zip
-        echo 'export PATH=$PATH:/opt/sonar-scanner/bin' >> ~/.bashrc
-        source ~/.bashrc
+      - name: Build and run tests
+        run: |
+          go build -v
+          go test -v ./...
 
-    - name: Build and run tests
-      run: |
-        go build -v
-        go test -v ./...
-
-    - name: SonarQube analysis
-      run: |
-        /opt/sonar-scanner/bin/sonar-scanner \
-           -Dsonar.host.url=http://13.200.137.62:9000/ \
-           -Dsonar.login=fcaf893b95cd5ea69ed8e63891dded3e51a1a250 \
-           -Dsonar.projectKey=golang \
-           -Dsonar.projectName=golang \
-           -Dsonar.sources=.
-
+      - name: Upload results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: codeql-results/codeql.sarif
