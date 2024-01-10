@@ -1,1 +1,23 @@
-
+Current runner version: '2.311.0'
+Operating System
+  Ubuntu
+  22.04.3
+  LTS
+Runner Image
+  Image: ubuntu-22.04
+  Version: 20231217.2.0
+  Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20231217.2/images/ubuntu/Ubuntu2204-Readme.md
+  Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20231217.2
+Runner Image Provisioner
+  2.0.321.1
+GITHUB_TOKEN Permissions
+  Contents: read
+  Metadata: read
+  Packages: read
+Secret source: Actions
+Prepare workflow directory
+Prepare all required actions
+Getting action download info
+Download action repository 'actions/checkout@v2' (SHA:ee0669bd1cc54295c223e0bb666b733df41de1c5)
+Download action repository 'github/codeql-action@v1' (SHA:231aa2c8a89117b126725a0e11897209b7118144)
+Error: Can't find 'action.yml', 'action.yaml' or 'Dockerfile' for action 'github/codeql-action/upload-results@v1'.
