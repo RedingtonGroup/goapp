@@ -29,13 +29,8 @@ jobs:
           go test -v ./...
 
       - name: Run CodeQL Analysis
+        id: codeql
         uses: github/codeql-action/analyze@v1
-
-      - name: Upload results in CSV format
-        uses: github/codeql-action/upload-results@v1
-        with:
-          format: 'csv'
-          name: 'codeql-results'
 
   dashboard:
     runs-on: ubuntu-latest
@@ -50,4 +45,4 @@ jobs:
       - name: Upload CodeQL results to GitHub Dashboard
         uses: github/codeql-action/upload-github-dashboard@v1
         with:
-          results: codeql-results/codeql.sarif
+          results: ${{ steps.codeql.outputs.results-path }}
