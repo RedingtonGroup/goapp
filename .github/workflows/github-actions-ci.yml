@@ -1,4 +1,4 @@
-name: CodeQL Analysis
+name: Go SonarQube
 
 on:
   push:
@@ -6,43 +6,37 @@ on:
       - main
 
 jobs:
-  codeql-analysis:
+  sonarqube:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [go]  # Add other languages as needed
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: ${{ matrix.language }}
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
 
-      - name: Build and run tests
-        run: |
-          go build -v
-          go test -v ./...
+    - name: Install SonarQube Scanner
+      run: |
+        curl -o sonar-scanner-cli.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+        unzip sonar-scanner-cli.zip
+        sudo mv sonar-scanner-4.6.2.2472-linux /opt/sonar-scanner
+        rm sonar-scanner-cli.zip
+        echo 'export PATH=$PATH:/opt/sonar-scanner/bin' >> ~/.bashrc
+        source ~/.bashrc
 
-      - name: Run CodeQL Analysis
-        id: codeql
-        uses: github/codeql-action/analyze@v1
+    - name: Build and run tests
+      run: |
+        go build -v
+        go test -v ./...
 
-  dashboard:
-    runs-on: ubuntu-latest
-    needs: codeql-analysis
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-
-      - name: Upload CodeQL results to GitHub Dashboard
-        uses: github/codeql-action/upload-github-dashboard@v1
-        with:
-          results: ${{ steps.codeql.outputs.results-path }}
+    - name: SonarQube analysis
+      run: |
+        /opt/sonar-scanner/bin/sonar-scanner \
+           -Dsonar.host.url=http://13.234.10.249:9000/ \
+           -Dsonar.login=9e23f8950040cdfd17b07e75a4a053c1f88e7a66 \
+           -Dsonar.projectKey=golang \
+           -Dsonar.projectName=golang \
+           -Dsonar.sources=.
